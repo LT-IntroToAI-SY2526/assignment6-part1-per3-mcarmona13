@@ -1,7 +1,7 @@
 """
 Assignment 6 Part 1: Student Performance Prediction
-Name: _______________
-Date: _______________
+Name: Max Carmona
+Date: 11-20-25
 
 This assignment predicts student test scores based on hours studied.
 Complete all the functions below following the in-class ice cream example.

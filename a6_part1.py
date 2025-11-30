@@ -25,16 +25,18 @@ def load_and_explore_data(filename):
     Returns:
         pandas DataFrame containing the data
     """
-    # TODO: Load the CSV file using pandas
-    
-    # TODO: Print the first 5 rows
-    
-    # TODO: Print the shape of the dataset (number of rows and columns)
-    
-    # TODO: Print basic statistics (mean, min, max, etc.)
-    
-    # TODO: Return the dataframe
-    pass
+    data = pd.read_csv(filename)
+
+    print("=== Student Scores Data ===")
+    print("\nFirst 5 rows:")
+    print(data.head())
+
+    print(f"\nDataset shape: {data.shape[0]} rows, {data.shape[1]} columns")
+
+    print("\nBasic statistics:")
+    print(data.describe())
+
+    return data
 
 
 def create_scatter_plot(data):
@@ -44,24 +46,16 @@ def create_scatter_plot(data):
     Args:
         data: pandas DataFrame with Hours and Scores columns
     """
-    # TODO: Create a figure with size (10, 6)
-    
-    # TODO: Create a scatter plot with Hours on x-axis and Scores on y-axis
-    #       Use color='purple' and alpha=0.6
-    
-    # TODO: Add x-axis label: 'Hours Studied'
-    
-    # TODO: Add y-axis label: 'Test Score'
-    
-    # TODO: Add title: 'Student Test Scores vs Hours Studied'
-    
-    # TODO: Add a grid with alpha=0.3
-    
-    # TODO: Save the figure as 'scatter_plot.png' with dpi=300
-    
-    # TODO: Show the plot
-    pass
+    plt.figure(figsize=(10, 6))
+    plt.scatter(data["Hours"], data["Scores"], color="purple", alpha=0.6)
 
+    plt.xlabel("Hours Studied", fontsize=12)
+    plt.ylabel("Test Score", fontsize=12)
+    plt.title("Student Test Scores vs Hours Studied", fontsize=14, fontweight="bold")
+    plt.grid(True, alpha=0.3)
+
+    plt.savefig("scatter_plot.png", dpi=300, bbox_inches="tight")
+    plt.show()
 
 def split_data(data):
     """
@@ -73,16 +67,18 @@ def split_data(data):
     Returns:
         X_train, X_test, y_train, y_test
     """
-    # TODO: Create X with the 'Hours' column (use double brackets to keep as DataFrame)
-    
-    # TODO: Create y with the 'Scores' column
-    
-    # TODO: Split the data using train_test_split with test_size=0.2 and random_state=42
-    
-    # TODO: Print how many samples are in training and testing sets
-    
-    # TODO: Return X_train, X_test, y_train, y_test
-    pass
+    X = data[["Hours"]]   # features
+    y = data["Scores"]    # target
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+
+    print("\n=== Data Split ===")
+    print(f"Training set: {len(X_train)} samples")
+    print(f"Testing set:  {len(X_test)} samples")
+
+    return X_train, X_test, y_train, y_test
 
 
 def train_model(X_train, y_train):
@@ -96,14 +92,18 @@ def train_model(X_train, y_train):
     Returns:
         trained LinearRegression model
     """
-    # TODO: Create a LinearRegression model
-    
-    # TODO: Train the model using .fit()
-    
-    # TODO: Print the coefficient (slope) and intercept
-    
-    # TODO: Return the trained model
-    pass
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+
+    slope = model.coef_[0]
+    intercept = model.intercept_
+
+    print("\n=== Model Training Complete ===")
+    print(f"Slope (coefficient): {slope:.2f}")
+    print(f"Intercept: {intercept:.2f}")
+    print(f"Equation: Score = {slope:.2f} × Hours + {intercept:.2f}")
+
+    return model
 
 
 def evaluate_model(model, X_test, y_test):
@@ -114,22 +114,21 @@ def evaluate_model(model, X_test, y_test):
         model: trained LinearRegression model
         X_test: testing features
         y_test: testing target values
-    
     Returns:
         predictions array
     """
-    # TODO: Make predictions using the model
-    
-    # TODO: Calculate R² score using r2_score()
-    
-    # TODO: Calculate Mean Squared Error using mean_squared_error()
-    
-    # TODO: Calculate Root Mean Squared Error (square root of MSE)
-    
-    # TODO: Print all three metrics with clear labels
-    
-    # TODO: Return the predictions
-    pass
+    predictions = model.predict(X_test)
+
+    r2 = r2_score(y_test, predictions)
+    mse = mean_squared_error(y_test, predictions)
+    rmse = np.sqrt(mse)
+
+    print("\n=== Model Performance ===")
+    print(f"R² Score: {r2:.4f}")
+    print(f"Mean Squared Error: {mse:.2f}")
+    print(f"Root Mean Squared Error: {rmse:.2f}")
+
+    return predictions
 
 
 def visualize_results(X_train, y_train, X_test, y_test, predictions, model):
@@ -144,27 +143,25 @@ def visualize_results(X_train, y_train, X_test, y_test, predictions, model):
         predictions: model predictions on test set
         model: trained model (to plot line of best fit)
     """
-    # TODO: Create a figure with size (12, 6)
-    
-    # TODO: Plot training data as blue scatter points with label 'Training Data'
-    
-    # TODO: Plot test data (actual) as green scatter points with label 'Test Data (Actual)'
-    
-    # TODO: Plot predictions as red X markers with label 'Predictions'
-    
-    # TODO: Create and plot the line of best fit
-    #       Hint: Create a range of X values, predict Y values, then plot as a black line
-    
-    # TODO: Add x-axis label, y-axis label, and title
-    
-    # TODO: Add legend
-    
-    # TODO: Add grid with alpha=0.3
-    
-    # TODO: Save the figure as 'predictions_plot.png' with dpi=300
-    
-    # TODO: Show the plot
-    pass
+    plt.figure(figsize=(12, 6))
+
+    plt.scatter(X_train, y_train, color="blue", alpha=0.5, label="Training Data")
+    plt.scatter(X_test, y_test, color="green", alpha=0.7, label="Test Data (Actual)")
+    plt.scatter(X_test, predictions, color="red", marker="x", s=100, label="Predictions")
+
+    x_range = np.linspace(X_train.min(), X_train.max(), 100).reshape(-1, 1)
+    y_range = model.predict(x_range)
+
+    plt.plot(x_range, y_range, color="black", linewidth=2, label="Line of Best Fit")
+
+    plt.xlabel("Hours Studied", fontsize=12)
+    plt.ylabel("Test Score", fontsize=12)
+    plt.title("Linear Regression: Student Score Prediction", fontsize=14, fontweight="bold")
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+
+    plt.savefig("predictions_plot.png", dpi=300, bbox_inches="tight")
+    plt.show()
 
 
 def make_prediction(model, hours):
@@ -178,14 +175,13 @@ def make_prediction(model, hours):
     Returns:
         predicted test score
     """
-    # TODO: Reshape hours into the format the model expects: np.array([[hours]])
-    
-    # TODO: Make a prediction
-    
-    # TODO: Print the prediction with a clear message
-    
-    # TODO: Return the predicted score
-    pass
+    hours_array = np.array([[hours]])
+    predicted_score = model.predict(hours_array)[0]
+
+    print("\n=== New Prediction ===")
+    print(f"If a student studies {hours} hours, predicted score is {predicted_score:.2f}")
+
+    return predicted_score
 
 
 if __name__ == "__main__":
@@ -213,6 +209,16 @@ if __name__ == "__main__":
     
     # Step 7: Make a new prediction
     # TODO: Call make_prediction() for a student who studied 7 hours
+
+    data = load_and_explore_data("student_scores.csv")
+    create_scatter_plot(data)
+
+    X_train, X_test, y_train, y_test = split_data(data)
+    model = train_model(X_train, y_train)
+    predictions = evaluate_model(model, X_test, y_test)
+    visualize_results(X_train, y_train, X_test, y_test, predictions, model)
+
+    make_prediction(model, 7)
     
     print("\n" + "=" * 70)
     print("✓ Assignment complete! Check your saved plots.")
